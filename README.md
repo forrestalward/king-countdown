@@ -1,36 +1,75 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# King Countdown 🐕
+
+A beautiful countdown timer for King the mini hairy sausage dog arriving on October 26th! Built with Next.js, React, and TypeScript.
+
+## Features
+
+- ⏰ **Real-time Countdown Timer** - Shows days, hours, minutes, and seconds until King arrives
+- ✨ **Interactive Particle Background** - Beautiful animated particles that respond to mouse interactions
+- 📸 **Image Gallery** - Upload and view photos of King with click-to-expand functionality
+- 🔒 **Password Protection** - Secure upload system to prevent spam
+- 📱 **Responsive Design** - Works perfectly on desktop and mobile devices
+- 🎨 **Modern UI** - Beautiful gradient background with glassmorphism effects
 
 ## Getting Started
 
-First, run the development server:
-
+1. Clone the repository:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone <your-repo-url>
+cd king-countdown
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies:
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Set up Supabase:
+   - Create a new project at [supabase.com](https://supabase.com)
+   - Go to Settings → API to get your project URL and anon key
+   - Create a `.env.local` file in the project root:
+   ```bash
+   NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+   NEXT_PUBLIC_UPLOAD_PASSWORD=your_secret_password
+   ```
+   - In your Supabase dashboard, go to Storage and create a bucket called `king-photos`
+   - Set the bucket to public and configure RLS policies (see SUPABASE_SETUP.md for details)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Run the development server:
+```bash
+npm run dev
+```
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+5. Open [http://localhost:3000](http://localhost:3000) in your browser
 
 ## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+The easiest way to deploy this app is using Vercel:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Push your code to GitHub
+2. Connect your repository to Vercel
+3. Deploy with one click!
+
+Or use the Vercel CLI:
+```bash
+npm i -g vercel
+vercel
+```
+
+## Technologies Used
+
+- **Next.js 15** - React framework
+- **TypeScript** - Type safety
+- **Tailwind CSS** - Styling
+- **Supabase** - Database and file storage
+- **@tsparticles/react** - Particle animations
+- **Lucide React** - Icons
+
+## Customization
+
+- **Target Date**: Update the date in `src/components/CountdownTimer.tsx` (currently set to October 26th)
+- **Colors**: Modify the gradient background in `src/app/page.tsx`
+- **Particles**: Adjust particle settings in `src/components/ParticleBackground.tsx`
+
+Enjoy counting down to King's arrival! 🎉
