@@ -55,7 +55,11 @@ export default function ImageGallery() {
 
       if (error) {
         console.error('Error loading images:', error);
-        setConnectionError('Unable to load images. Please check your Supabase connection.');
+        if (error.message?.includes('missing environment variables')) {
+          setConnectionError('Supabase not configured. Please set up environment variables on Vercel.');
+        } else {
+          setConnectionError('Unable to load images. Please check your Supabase connection.');
+        }
         return;
       }
 
@@ -110,6 +114,10 @@ export default function ImageGallery() {
 
               if (error) {
                 console.error('Error uploading file:', error);
+                if (error.message?.includes('missing environment variables')) {
+                  alert('Supabase not configured. Please set up environment variables on Vercel.');
+                  return;
+                }
                 continue;
               }
 

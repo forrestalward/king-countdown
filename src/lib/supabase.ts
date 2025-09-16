@@ -7,15 +7,28 @@ export const getSupabaseClient = () => {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
     const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
+    console.log('Supabase URL:', supabaseUrl ? 'Found' : 'Missing')
+    console.log('Supabase Key:', supabaseAnonKey ? 'Found' : 'Missing')
+
     if (!supabaseUrl || !supabaseAnonKey) {
-      console.warn('Supabase environment variables not found. Some features may not work.')
-      // Return a mock client for build time
+      console.error('Supabase environment variables not found!')
+      console.error('Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in your environment variables.')
+      
+      // Return a mock client that provides better error messages
       return {
         storage: {
           from: () => ({
-            list: () => Promise.resolve({ data: [], error: null }),
-            upload: () => Promise.resolve({ data: null, error: { message: 'Supabase not configured' } }),
-            remove: () => Promise.resolve({ error: { message: 'Supabase not configured' } }),
+            list: () => Promise.resolve({ 
+              data: [], 
+              error: { message: 'Supabase not configured - missing environment variables' } 
+            }),
+            upload: () => Promise.resolve({ 
+              data: null, 
+              error: { message: 'Supabase not configured - missing environment variables' } 
+            }),
+            remove: () => Promise.resolve({ 
+              error: { message: 'Supabase not configured - missing environment variables' } 
+            }),
             getPublicUrl: () => ({ data: { publicUrl: '' } })
           })
         }
@@ -23,6 +36,7 @@ export const getSupabaseClient = () => {
     }
 
     supabaseClient = createClient(supabaseUrl, supabaseAnonKey)
+    console.log('Supabase client initialized successfully')
   }
   
   return supabaseClient
