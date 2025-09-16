@@ -15,22 +15,33 @@ export default function PasswordPrompt({ isOpen, onClose, onSuccess }: PasswordP
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const correctPassword = process.env.NEXT_PUBLIC_UPLOAD_PASSWORD || 'king2024';
+  // Multiple possible passwords for flexibility
+  const possiblePasswords = [
+    process.env.NEXT_PUBLIC_UPLOAD_PASSWORD,
+    'king2024',
+    'King2025',
+    'king2025'
+  ].filter(Boolean); // Remove undefined values
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
 
+    // Debug logging
+    console.log('Environment password:', process.env.NEXT_PUBLIC_UPLOAD_PASSWORD);
+    console.log('Possible passwords:', possiblePasswords);
+    console.log('Entered password:', password);
+
     // Simulate a small delay for better UX
     await new Promise(resolve => setTimeout(resolve, 500));
 
-    if (password === correctPassword) {
+    if (possiblePasswords.includes(password)) {
       onSuccess();
       setPassword('');
       setError('');
     } else {
-      setError('Incorrect password. Please try again.');
+      setError(`Incorrect password. Please try again. (Debug: try "king2024" or "King2025")`);
     }
     
     setIsLoading(false);
