@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Upload, X, Loader2, Lock } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
+import { getSupabaseClient } from '@/lib/supabase';
 import PasswordPrompt from './PasswordPrompt';
 import DeleteConfirmation from './DeleteConfirmation';
 
@@ -11,6 +11,12 @@ interface ImageData {
   url: string;
   name: string;
   created_at?: string;
+}
+
+interface SupabaseFile {
+  id: string;
+  name: string;
+  created_at: string;
 }
 
 export default function ImageGallery() {
@@ -39,6 +45,7 @@ export default function ImageGallery() {
   const loadImages = async () => {
     try {
       setConnectionError(null);
+      const supabase = getSupabaseClient();
       const { data, error } = await supabase.storage
         .from('king-photos')
         .list('', {
@@ -53,7 +60,7 @@ export default function ImageGallery() {
       }
 
       const imageUrls = await Promise.all(
-        data.map(async (file) => {
+        data.map(async (file: SupabaseFile) => {
           const { data: urlData } = supabase.storage
             .from('king-photos')
             .getPublicUrl(file.name);
@@ -89,43 +96,44 @@ export default function ImageGallery() {
 
     setIsUploading(true);
     
-    try {
-      for (const file of Array.from(files)) {
-        if (file.type.startsWith('image/')) {
-          // Generate unique filename
-          const fileExt = file.name.split('.').pop();
-          const fileName = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}.${fileExt}`;
-          
-          const { data, error } = await supabase.storage
-            .from('king-photos')
-            .upload(fileName, file);
+        try {
+          const supabase = getSupabaseClient();
+          for (const file of Array.from(files)) {
+            if (file.type.startsWith('image/')) {
+              // Generate unique filename
+              const fileExt = file.name.split('.').pop();
+              const fileName = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}.${fileExt}`;
+              
+              const { data, error } = await supabase.storage
+                .from('king-photos')
+                .upload(fileName, file);
 
-          if (error) {
-            console.error('Error uploading file:', error);
-            continue;
+              if (error) {
+                console.error('Error uploading file:', error);
+                continue;
+              }
+
+              // Get public URL
+              const { data: urlData } = supabase.storage
+                .from('king-photos')
+                .getPublicUrl(fileName);
+
+              const newImage: ImageData = {
+                id: data.id,
+                url: urlData.publicUrl,
+                name: file.name,
+                created_at: new Date().toISOString(),
+              };
+
+              setImages(prev => [newImage, ...prev]); // Add to beginning of array
+            }
           }
-
-          // Get public URL
-          const { data: urlData } = supabase.storage
-            .from('king-photos')
-            .getPublicUrl(fileName);
-
-          const newImage: ImageData = {
-            id: data.id,
-            url: urlData.publicUrl,
-            name: file.name,
-            created_at: new Date().toISOString(),
-          };
-
-          setImages(prev => [newImage, ...prev]); // Add to beginning of array
+        } catch (error) {
+          console.error('Error uploading images:', error);
+        } finally {
+          setIsUploading(false);
+          event.target.value = ''; // Reset input
         }
-      }
-    } catch (error) {
-      console.error('Error uploading images:', error);
-    } finally {
-      setIsUploading(false);
-      event.target.value = ''; // Reset input
-    }
   };
 
   const handleDeleteClick = (id: string, fileName: string) => {
@@ -139,6 +147,7 @@ export default function ImageGallery() {
   const confirmDelete = async () => {
     const { imageId, imageName } = deleteConfirmation;
     try {
+      const supabase = getSupabaseClient();
       const { error } = await supabase.storage
         .from('king-photos')
         .remove([imageName]);
